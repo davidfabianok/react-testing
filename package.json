@@ -1,0 +1,17 @@
+{
+  "name": "react-testing",
+  "version": "1.0.0",
+  "author": "David Fabian",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "bootstrap": "lerna bootstrap",
+    "clean": "lerna clean -y && exec rm -rf node_modules",
+    "reset": "yarn clean && exec yarn && yarn bootstrap"
+  },
+  "devDependencies": {
+    "lerna": "^4.0.0"
+  },
+  "private": true,
+  "workspaces": ["packages/*"]
+}
