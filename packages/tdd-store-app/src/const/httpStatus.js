@@ -1,0 +1,7 @@
+export const CREATED_STATUS = 201;
+export const INTERNAL_SERVER_ERROR_STATUS = 500;
+
+export default {
+  CREATED_STATUS,
+  INTERNAL_SERVER_ERROR_STATUS,
+};
