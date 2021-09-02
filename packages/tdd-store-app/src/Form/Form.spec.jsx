@@ -6,6 +6,7 @@ import Form from './Form';
 import {
   CREATED_STATUS,
   INTERNAL_SERVER_ERROR_STATUS,
+  INVALID_REQUEST_STATUS,
 } from '../const/httpStatus';
 
 const server = setupServer(
@@ -23,6 +24,8 @@ beforeAll(() => server.listen());
 
 // Disable API mocking after the tests are done.
 afterAll(() => server.close());
+
+afterEach(() => server.resetHandlers());
 
 beforeEach(() => {
   render(<Form />);
@@ -131,7 +134,7 @@ describe('when the user blurs an empty fields', () => {
   });
 });
 
-describe('when the user submits the form', () => {
+describe('when the user submits the form properly and the server returns created status', () => {
   it('should the submit button be disabled until the request is done', async () => {
     const submitButton = screen.getByRole('button', {name: /submit/i});
     expect(submitButton).not.toBeDisabled();
@@ -170,5 +173,67 @@ describe('when the user submits the form', () => {
     expect(nameInput).toHaveValue('');
     expect(sizeInput).toHaveValue('');
     expect(typeSelect).toHaveValue('');
+  });
+});
+
+describe('when the user submit the form and the server returns an unexpected error', () => {
+  it('the form page must display the error message "unexpected error, please try again"', async () => {
+    const submitButton = screen.getByRole('button', {name: /submit/i});
+
+    fireEvent.click(submitButton);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(/unexpected error , please try again/i),
+      ).toBeInTheDocument();
+    });
+  });
+});
+
+describe('when the user submit the form and the server returns an invalid request error', () => {
+  it('the form page must display the error message "The form is invalid, the fields [field1...fieldN] are required"', async () => {
+    server.use(
+      rest.post('/products', (req, res, context) =>
+        res(
+          context.status(INVALID_REQUEST_STATUS),
+          context.json({
+            message:
+              'The form is invalid, the fields name, size and type are required',
+          }),
+        ),
+      ),
+    );
+
+    const submitButton = screen.getByRole('button', {name: /submit/i});
+
+    fireEvent.click(submitButton);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          /the form is invalid, the fields name, size and type are required/i,
+        ),
+      ).toBeInTheDocument();
+    });
+  });
+});
+
+describe('when the user submit the form and the server returns an invalid request error ss', () => {
+  it('the form page must display the error message "The form is invalid, the fields [field1...fieldN] are required"', async () => {
+    server.use(
+      rest.post('/products', (req, res, context) =>
+        res.networkError('Connection error, please try later'),
+      ),
+    );
+
+    const submitButton = screen.getByRole('button', {name: /submit/i});
+
+    fireEvent.click(submitButton);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(/connection error, please try later/i),
+      ).toBeInTheDocument();
+    });
   });
 });
