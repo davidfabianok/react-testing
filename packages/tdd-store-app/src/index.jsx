@@ -1,11 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+
 import reportWebVitals from './reportWebVitals';
 import AppProviders from './AppProviders';
+import App from './App';
 
 ReactDOM.render(
   <React.StrictMode>
-    <AppProviders />
+    <AppProviders>
+      <App />
+    </AppProviders>
   </React.StrictMode>,
   document.getElementById('root'),
 );

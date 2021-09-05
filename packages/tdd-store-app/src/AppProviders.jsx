@@ -1,12 +1,15 @@
-import {ChakraProvider} from '@chakra-ui/react';
-import CSSReset from '@chakra-ui/css-reset';
-import App from './App';
+import {ChakraProvider, CSSReset} from '@chakra-ui/react';
+import PropTypes from 'prop-types';
 
-export default function AppProviders() {
+export default function AppProviders({children}) {
   return (
     <ChakraProvider>
       <CSSReset />
-      <App />
+      {children}
     </ChakraProvider>
   );
 }
+
+AppProviders.propTypes = {
+  children: PropTypes.node.isRequired,
+};
